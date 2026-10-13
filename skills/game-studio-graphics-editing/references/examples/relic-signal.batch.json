@@ -1,0 +1,59 @@
+{
+  "version": "game-studio-batch/v3",
+  "outputRoot": "out",
+  "concurrency": 2,
+  "project": { "mode": "create", "externalId": "relic-signal", "input": { "name": "Relic Signal", "genre": "adventure" } },
+  "characters": [
+    { "externalId": "signal-keeper", "definition": { "mode": "create", "input": { "name": "Signal keeper" } } }
+  ],
+  "artSettings": {
+    "expectedRevision": 0,
+    "content": {
+      "camera": { "primaryCamera": "front", "cameraModes": ["front"] },
+      "canvas": { "width": 640, "height": 360 },
+      "tiles": { "width": 32, "height": 32 },
+      "targetEngine": "godot"
+    }
+  },
+  "entries": [
+    {
+      "externalId": "signal-keeper",
+      "input": { "kind": "character",
+        "selectedReferenceIds": [], "characterRef": "signal-keeper", "name": "Signal keeper", "width": 96, "height": 96, "direction": "front", "candidateCount": 1, "modelIds": ["bytedance-seed/seedream-4.5"] },
+      "prompt": { "kind": "inline", "brief": "A readable workshop keeper holding a small copper signal lamp." },
+      "candidatePlan": { "mode": "explicit-review" },
+      "output": { "previewPath": "keeper-preview.png", "imagePath": "keeper.png", "metadataPath": "keeper.json" }
+    },
+    {
+      "externalId": "copper-relic",
+      "input": { "kind": "prop",
+        "selectedReferenceIds": [], "name": "Copper relic", "width": 64, "height": 64, "direction": "none", "candidateCount": 1, "modelIds": ["bytedance-seed/seedream-4.5"] },
+      "prompt": { "kind": "inline", "brief": "A single readable copper relic with a dark outline and clear silhouette." },
+      "candidatePlan": { "mode": "explicit-review" },
+      "output": { "previewPath": "relic-preview.png", "imagePath": "relic.png", "metadataPath": "relic.json" }
+    },
+    {
+      "externalId": "workshop-background",
+      "input": { "kind": "background",
+        "selectedReferenceIds": [], "name": "Workshop", "camera": "front", "candidateCount": 1, "modelIds": ["bytedance-seed/seedream-4.5"] },
+      "prompt": { "kind": "inline", "brief": "A static copper workshop game screen with a clear central play area." },
+      "candidatePlan": { "mode": "explicit-review" },
+      "output": { "imagePath": "workshop.png", "metadataPath": "workshop.json" }
+    },
+    {
+      "externalId": "inventory-icon",
+      "input": { "kind": "ui-icon",
+        "selectedReferenceIds": [], "name": "Relic pouch", "size": 64, "candidateCount": 1, "modelIds": ["bytedance-seed/seedream-4.5"] },
+      "prompt": { "kind": "inline", "brief": "A centered leather relic pouch icon with no text and a clear outline." },
+      "candidatePlan": { "mode": "explicit-review" },
+      "output": { "imagePath": "pouch.png", "metadataPath": "pouch.json" }
+    },
+    {
+      "externalId": "inventory-button",
+      "input": { "kind": "ui-surface", "surfaceKind": "button", "name": "Inventory button", "width": 96, "height": 32, "selectedReferenceIds": [], "candidateCount": 1, "modelIds": ["bytedance-seed/seedream-4.5"] },
+      "prompt": { "kind": "inline", "brief": "A copper inventory button surface with a clear border and no text." },
+      "candidatePlan": { "mode": "explicit-review" },
+      "output": { "imagePath": "button.png", "metadataPath": "button.json" }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "@lumenarium/game-studio-skills",
+  "version": "0.1.1",
+  "description": "Lumenarium Studio CLI and official agent skills for Codex and Claude Code",
+  "type": "module",
+  "license": "MIT",
+  "author": "Lumenarium contributors",
+  "homepage": "https://github.com/Lumenarium/game-studio-skills#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lumenarium/game-studio-skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lumenarium/game-studio-skills/issues"
+  },
+  "keywords": [
+    "agent-skills",
+    "skills",
+    "codex",
+    "claude-code",
+    "lumenarium",
+    "game-development"
+  ],
+  "files": [
+    "skills/",
+    "bin/",
+    ".env",
+    "INSTALL.md",
+    "README.ru.md",
+    "INSTALL.ru.md"
+  ],
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "test": "node --test test/package.test.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "bin": {
+    "game-studio": "bin/game-studio.js"
+  },
+  "dependencies": {
+    "sharp": "^0.35.3",
+    "zod": "^4.4.3",
+    "markdown-it": "^15.0.1",
+    "skills": "1.7.2"
+  }
+}
