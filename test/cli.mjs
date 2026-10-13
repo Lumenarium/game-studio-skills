@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
 export async function verifyCli({ installed, consumer, run, npm }) {
@@ -51,9 +50,15 @@ export async function verifyCli({ installed, consumer, run, npm }) {
   }
 
   // A real local graphics command proves the native Sharp dependency works after npm installation.
-  const sharp = createRequire(join(consumer, 'package.json'))('sharp');
   const rgba = Buffer.from([255, 0, 0, 255]);
-  const png = await sharp(rgba, { raw: { width: 1, height: 1, channels: 4 } }).png().toBuffer();
+  // Load native DLLs in child processes so Windows can remove the installation afterward.
+  const sharp = async (expression) => run(['--input-type=module', '--eval', `
+    import sharp from 'sharp';
+    const bytes = await ${expression};
+    process.stdout.write(bytes.toString('base64'));
+  `], consumer);
+  const encoded = await sharp('sharp(Buffer.from([255, 0, 0, 255]), { raw: { width: 1, height: 1, channels: 4 } }).png().toBuffer()');
+  const png = Buffer.from(encoded.stdout, 'base64');
   await writeFile(join(consumer, 'cell.png'), png);
   await writeFile(join(consumer, 'native.json'), JSON.stringify({
     manifest: {
@@ -64,6 +69,6 @@ export async function verifyCli({ installed, consumer, run, npm }) {
     cells: [{ frameId: id, layerId: id, path: 'cell.png' }],
   }));
   await cli(['asset', 'native', 'render', '--input', 'native.json', '--mode', 'frame', '--output-root', '.', '--image', 'rendered.png']);
-  const pixels = await sharp(join(consumer, 'rendered.png')).ensureAlpha().raw().toBuffer();
-  assert.deepEqual(pixels, rgba);
+  const pixels = await sharp("sharp('rendered.png').ensureAlpha().raw().toBuffer()");
+  assert.deepEqual(Buffer.from(pixels.stdout, 'base64'), rgba);
 }

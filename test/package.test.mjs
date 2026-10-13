@@ -85,7 +85,7 @@ test('npm tarball and Skills CLI installs preserve the complete licensed collect
   assert.equal(manifest.publishConfig.access, 'public');
   assert.deepEqual(manifest.bin, { 'game-studio': 'bin/game-studio.js' });
   assert.deepEqual(Object.keys(manifest.dependencies).sort(), ['markdown-it', 'sharp', 'skills', 'zod']);
-  assert.equal(await readFile(join(installed, '.env'), 'utf8'), 'GAME_STUDIO_TOKEN=\n');
+  assert.match(await readFile(join(installed, '.env'), 'utf8'), /^GAME_STUDIO_TOKEN=\r?\n$/);
   for (const hook of ['preinstall', 'install', 'postinstall', 'prepare']) {
     assert.equal(manifest.scripts?.[hook], undefined, `Unexpected installation hook: ${hook}`);
   }

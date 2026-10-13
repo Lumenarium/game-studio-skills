@@ -7503,11 +7503,14 @@ async function publish(root, relative, source, expected, previousChecksum, check
       throw new LocalFileError("conflict", "Output belongs to another file.");
     if (existing) await rename(temporary, destination);
     else await link(temporary, destination);
-    const directory = await open(dirname(destination), "r");
-    try {
-      await directory.sync();
-    } finally {
-      await directory.close();
+    // Windows does not support opening directories for fsync through node:fs.
+    if (process.platform !== "win32") {
+      const directory = await open(dirname(destination), "r");
+      try {
+        await directory.sync();
+      } finally {
+        await directory.close();
+      }
     }
     checkpoint?.("published");
     return { path: relative, checksum: expected.checksum, byteSize };
