@@ -19,7 +19,7 @@ export async function verifySetup({ installed, temporary, tarball, run }) {
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 const args = process.argv.slice(2);
-assert.deepEqual(args, ['install', '--save-dev', '--save-exact', '--ignore-scripts', '--no-audit', '--no-fund', '@lumenarium/game-studio-skills@0.1.1']);
+assert.deepEqual(args, ['install', '--save-dev', '--save-exact', '--ignore-scripts', '--no-audit', '--no-fund', '@lumenarium/game-studio-skills@0.1.2']);
 args[args.length - 1] = process.env.FIXTURE_TARBALL;
 const child = spawn(process.execPath, [process.env.FIXTURE_NPM, ...args], { stdio: 'inherit' });
 child.once('error', () => { process.exitCode = 1; });
@@ -32,7 +32,7 @@ child.once('close', (code) => { process.exitCode = code ?? 1; });
   });
   assert.equal(JSON.parse(first.stdout).data.installed, true);
   const installedPackage = join(project, 'node_modules/@lumenarium/game-studio-skills');
-  assert.equal(JSON.parse(await readFile(join(installedPackage, 'package.json'), 'utf8')).version, '0.1.1');
+  assert.equal(JSON.parse(await readFile(join(installedPackage, 'package.json'), 'utf8')).version, '0.1.2');
   const packageManifest = JSON.parse(await readFile(join(project, 'package.json'), 'utf8'));
   assert.ok(packageManifest.devDependencies['@lumenarium/game-studio-skills']);
   assert.equal(await readFile(join(project, '.env'), 'utf8'), 'GAME_STUDIO_TOKEN=\n');

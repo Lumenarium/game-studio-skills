@@ -15,17 +15,14 @@ game-studio --help --json
 game-studio project create --help --json
 ```
 
-The service endpoint is fixed to `https://studio.lumenarium.biz`. Set
-`GAME_STUDIO_ENDPOINT=https://studio.lumenarium.biz` and always pass
-`--endpoint https://studio.lumenarium.biz` on remote commands, as shown below.
 The user provisions only `GAME_STUDIO_TOKEN` in the game project's gitignored `.env` or authorized environment.
 The CLI reads the working directory's `.env` automatically; explicit environment credentials take precedence.
 An explicitly configured `--token-stdin` is also supported. Never put tokens in arguments, input files,
 logs, chat, skills or committed scripts. Tokens are scoped to one Studio and expire within 90 days.
 
 ```sh
-game-studio auth whoami --json --endpoint https://studio.lumenarium.biz
-game-studio project list --studio STUDIO_ID --json --endpoint https://studio.lumenarium.biz
+game-studio auth whoami --json
+game-studio project list --studio STUDIO_ID --json
 ```
 
 Confirm the intended Studio before mutation. Scopes intersect with current project access;

@@ -6051,13 +6051,13 @@ var queryString = (query) => new URLSearchParams(
   Object.entries(query).filter(([, value]) => value !== void 0).map(([key3, value]) => [key3, String(value)])
 );
 function transport(options) {
-  let endpoint;
+  let endpoint2;
   try {
-    endpoint = new URL(options.endpoint);
+    endpoint2 = new URL(options.endpoint);
   } catch {
     throw problem("input", "validation_failed");
   }
-  if (!["https:", "http:"].includes(endpoint.protocol) || endpoint.username || endpoint.password || endpoint.search || endpoint.hash)
+  if (!["https:", "http:"].includes(endpoint2.protocol) || endpoint2.username || endpoint2.password || endpoint2.search || endpoint2.hash)
     throw problem("input", "validation_failed");
   const root = options.endpoint.replace(/\/$/, "");
   const fetcher = options.fetch ?? fetch;
@@ -7991,7 +7991,7 @@ async function exportAsset(client, projectId, assetId, root, image, metadataPath
 }
 
 // apps/cli/src/batch.ts
-async function runBatch(client, fetcher, endpoint, path, action, options) {
+async function runBatch(client, fetcher, endpoint2, path, action, options) {
   const plan = await preflight(path, void 0, options.receiptPath);
   if (!Number.isInteger(options.maxPolls) || options.maxPolls < 1 || options.maxPolls > 3600)
     throw new LocalFileError("input", "Invalid polling budget.");
@@ -8012,7 +8012,7 @@ async function runBatch(client, fetcher, endpoint, path, action, options) {
           "Receipt is missing; specify the original receipt to resume."
         );
       const serverFingerprint = sha2562(
-        JSON.stringify([new URL(endpoint).href, principal.studioId])
+        JSON.stringify([new URL(endpoint2).href, principal.studioId])
       );
       const receipt = store.current ?? {
         version: "game-studio-batch/v3",
@@ -9748,7 +9748,7 @@ var definitions = [
   ]
 ];
 var words = (value) => value ? value.split(" ") : [];
-var globals = ["json", "ndjson", "help", "endpoint", "token-stdin"];
+var globals = ["json", "ndjson", "help", "token-stdin"];
 var commandDefinitions = definitions.map(
   ([path, required, optional, inputContract, scopes, effect]) => ({
     path,
@@ -10503,7 +10503,6 @@ import { lstat as lstat2, open as open3 } from "node:fs/promises";
 import { join as join2 } from "node:path";
 import { parseEnv } from "node:util";
 var agentEnvironmentTemplate = "GAME_STUDIO_TOKEN=\n";
-var defaultStudioEndpoint = "https://studio.lumenarium.biz";
 var maxBytes = 64 * 1024;
 async function projectFile(root, name, create) {
   const path = join2(root, name);
@@ -10552,8 +10551,7 @@ async function initializeProject(root) {
     }
     return {
       environmentFile: ".env",
-      tokenVariable: "GAME_STUDIO_TOKEN",
-      endpoint: defaultStudioEndpoint
+      tokenVariable: "GAME_STUDIO_TOKEN"
     };
   } catch {
     throw new LocalFileError(
@@ -10602,7 +10600,6 @@ async function setupProject(root, io) {
     DO_NOT_TRACK: "1"
   };
   delete env["GAME_STUDIO_TOKEN"];
-  delete env["GAME_STUDIO_ENDPOINT"];
   const execute = (args, quiet = false) => new Promise((resolve7, reject) => {
     const child = spawn(process.execPath, args, {
       cwd: root,
@@ -10786,6 +10783,7 @@ async function runTilesetCommand(command, values, client, opts) {
 
 // apps/cli/src/run.ts
 var summarizeJob = inspectAutomationJob;
+var endpoint = "https://studio.lumenarium.biz";
 async function run(args, io) {
   let ndjson = false;
   try {
@@ -10798,7 +10796,6 @@ async function run(args, io) {
         ndjson: { type: "boolean" },
         help: { type: "boolean" },
         version: { type: "boolean" },
-        endpoint: { type: "string" },
         "token-stdin": { type: "boolean" },
         input: { type: "string" },
         file: { type: "string" },
@@ -10882,14 +10879,14 @@ async function run(args, io) {
     if (values.version) {
       if (command || Object.keys(values).some((key3) => !["version", "json", "ndjson"].includes(key3)))
         throw new LocalFileError("input", "Version accepts only output format options.");
-      return finish({ cliVersion: "0.1.1", protocol: "game-studio-automation/v1" });
+      return finish({ cliVersion: "0.1.2", protocol: "game-studio-automation/v1" });
     }
     validateCommand(command, values);
     const required = (value) => {
       if (!value) throw new LocalFileError("input", "Required option is missing.");
       return value;
     };
-    const { GAME_STUDIO_TOKEN, GAME_STUDIO_ENDPOINT } = io.env;
+    const { GAME_STUDIO_TOKEN } = io.env;
     if (command === "setup")
       return finish(await setupProject(io.projectDirectory ?? process.cwd(), io));
     if (command === "init")
@@ -10913,7 +10910,6 @@ async function run(args, io) {
       });
     }
     const token = values["token-stdin"] ? (await io.stdin()).trim() : await projectToken(GAME_STUDIO_TOKEN, io.projectDirectory);
-    const endpoint = values.endpoint ?? GAME_STUDIO_ENDPOINT ?? defaultStudioEndpoint;
     const client = createAutomationClient({
       endpoint,
       bearer: () => token ?? "",

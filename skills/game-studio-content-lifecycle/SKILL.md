@@ -7,17 +7,13 @@ description: Inspect Game Studio retained content and recover exact-target trash
 
 Administration and token/credential management are excluded from this CLI workflow.
 
-The service endpoint is fixed: `https://studio.lumenarium.biz`. Set
-`GAME_STUDIO_ENDPOINT=https://studio.lumenarium.biz` and pass
-`--endpoint https://studio.lumenarium.biz` on every remote command.
-
 The npm package `@lumenarium/game-studio-skills` includes the CLI. Run all examples from the game project,
 using `npx --no-install game-studio` in place of the bare `game-studio` prefix for a local npm installation.
 The user runs `npx @lumenarium/game-studio-skills@latest setup` and fills `GAME_STUDIO_TOKEN=` in the project’s gitignored
 `.env`; the CLI reads it automatically. Explicit environment credentials or `--token-stdin` override the file.
 Never read or print the token yourself; let the CLI load it.
 
-Read `AGENTS.md` and preserve unrelated data. Use `GAME_STUDIO_ENDPOINT` and `GAME_STUDIO_TOKEN`
+Read `AGENTS.md` and preserve unrelated data. Use `GAME_STUDIO_TOKEN`
 from an authorized environment or `--token-stdin`. Never use private API routes, browser cookies,
 direct database/storage access or MCP-specific mechanisms. Never persist signed URLs or private object keys.
 Reject traversal and symlink escape. Provider work is unsupported here; it requires separate explicit
@@ -28,10 +24,10 @@ Read [lifecycle examples](references/examples/lifecycle.md). Choose the exact `r
 details require their own domain read scopes. Do not interpret hidden details as zero dependencies.
 
 ```sh
-game-studio content trash-list --project PROJECT_ID --family all --limit 100 --json --endpoint https://studio.lumenarium.biz
-game-studio content status --project PROJECT_ID --family asset --content CONTENT_ID --json --endpoint https://studio.lumenarium.biz
-game-studio content trash --project PROJECT_ID --family asset --content CONTENT_ID --idempotency-key trash-v1 --json --endpoint https://studio.lumenarium.biz
-game-studio content restore --project PROJECT_ID --family asset --content CONTENT_ID --idempotency-key restore-v1 --json --endpoint https://studio.lumenarium.biz
+game-studio content trash-list --project PROJECT_ID --family all --limit 100 --json
+game-studio content status --project PROJECT_ID --family asset --content CONTENT_ID --json
+game-studio content trash --project PROJECT_ID --family asset --content CONTENT_ID --idempotency-key trash-v1 --json
+game-studio content restore --project PROJECT_ID --family asset --content CONTENT_ID --idempotency-key restore-v1 --json
 ```
 
 Reusing a key returns the original result without undoing a later operation. A 503 can mean the transition

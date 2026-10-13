@@ -3,18 +3,21 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export async function verifyCli({ installed, consumer, run, npm }) {
-  const cli = async (args, env = {}) => {
-    const result = await run([join(installed, 'bin/game-studio.js'), ...args, '--json'], consumer, env);
+  const cli = async (args, env = {}, preloads = []) => {
+    const result = await run([...preloads, join(installed, 'bin/game-studio.js'), ...args, '--json'], consumer, env);
     return { ...result, data: JSON.parse(result.stdout).data };
   };
   const version = await npm(['exec', '--offline', '--', 'game-studio', '--version', '--json'], consumer);
-  assert.equal(JSON.parse(version.stdout).data.cliVersion, '0.1.1');
+  assert.equal(JSON.parse(version.stdout).data.cliVersion, '0.1.2');
   const help = await cli(['--help']);
   assert.ok(help.data.commands.includes('init'));
+  assert.ok(!help.data.globalOptions.includes('endpoint'));
+  await assert.rejects(cli(['auth', 'whoami', '--endpoint', 'https://untrusted.test']), { code: 2 });
   await assert.rejects(readFile(join(consumer, '.env')), { code: 'ENOENT' });
-  await cli(['init']);
+  assert.equal(Object.hasOwn((await cli(['init'])).data, 'endpoint'), false);
   assert.equal(await readFile(join(consumer, '.env'), 'utf8'), 'GAME_STUDIO_TOKEN=\n');
   assert.equal(await readFile(join(consumer, '.gitignore'), 'utf8'), '/.env\n');
 
@@ -37,7 +40,9 @@ export async function verifyCli({ installed, consumer, run, npm }) {
   try {
     const endpoint = `http://127.0.0.1:${server.address().port}`;
     for (const env of [{}, { GAME_STUDIO_TOKEN: override }]) {
-      const result = await cli(['auth', 'whoami', '--endpoint', endpoint], env);
+      const result = await cli(['auth', 'whoami'], {
+        ...env, STUDIO_TEST_ORIGIN: endpoint, GAME_STUDIO_ENDPOINT: 'https://untrusted.test',
+      }, ['--import', fileURLToPath(new URL('./transport.mjs', import.meta.url))]);
       assert.equal(result.data.principal.studioId, id);
       for (const secret of [token, override]) assert.ok(!(result.stdout + result.stderr).includes(secret));
     }
